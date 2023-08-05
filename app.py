@@ -102,7 +102,19 @@ def knowlet_edit(knowlet_id):
     else:
         knowlet = Knowlet.query.filter(Knowlet.id == knowlet_id).first()
         return render_template('knowlet_edit.html', knowlet=knowlet)
-        
+    
+# ナレット削除画面
+@app.route('/<int:knowlet_id>/delete', methods=['GET', 'POST'])
+def knowlet_delete(knowlet_id):
+    if request.method == 'POST':
+        # Knowletのインスタンスを作成
+        knowlet = db.session.query(Knowlet).filter(Knowlet.id == knowlet_id).first() # 他にもいい書き方あるかも
+        db.session.delete(knowlet)
+        db.session.commit()
+        return redirect('/')
+    else:
+        knowlet = Knowlet.query.filter(Knowlet.id == knowlet_id).first()
+        return render_template('knowlet_delete.html', knowlet=knowlet)
         
 if __name__ == "__main__":
     app.run(port=8000)
