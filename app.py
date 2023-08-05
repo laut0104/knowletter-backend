@@ -73,16 +73,36 @@ def create():
     if request.method == 'POST':
         title = request.form.get('title')
         content = request.form.get('content')
-        resolved = request.form.get('resolved')
+        resolved = int(request.form.get('resolved'))
         
         # Knowletのインスタンスを作成
         knowlet = Knowlet(title=title, content=content, 
-                          user_id=current_user.id, resolved=int(resolved))
+                          user_id=current_user.id, resolved=resolved)
         db.session.add(knowlet)
         db.session.commit()
         return redirect('/')
     else:
         return render_template('create.html')
+    
+# ナレット編集画面
+@app.route('/<int:knowlet_id>/edit', methods=['GET', 'POST'])
+def knowlet_edit(knowlet_id):
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        resolved = int(request.form.get('resolved'))
+        
+        # Knowletのインスタンスを作成
+        knowlet = db.session.query(Knowlet).filter(Knowlet.id == knowlet_id).first() # 他にもいい書き方あるかも
+        knowlet.title = title
+        knowlet.content = content
+        knowlet.resolved = resolved
+        db.session.commit()
+        return redirect('/')
+    else:
+        knowlet = Knowlet.query.filter(Knowlet.id == knowlet_id).first()
+        return render_template('knowlet_edit.html', knowlet=knowlet)
+        
         
 if __name__ == "__main__":
     app.run(port=8000)
